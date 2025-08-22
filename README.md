@@ -43,11 +43,17 @@ A Flask-based web application that generates a Bash script to install user-speci
    ```bash
    pip install Flask openai==0.28
    ```
+5. Create the .env file
+   ```
+   OPENAI_API_KEY="your api key"
+   OPENROUTER_API_BASE="https://api.openai.com/v1"
+   ```
 
 ---
 
 ## Usage
 
+0. Edit the LLM prompt by changing the prompt variable in the ```generate_script()``` function
 1. Start the Flask application  
    ```bash
    python app.py
