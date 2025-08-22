@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ubuntu Installer Script Generator</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    label { display: block; margin-bottom: 1rem; }
+    textarea, input[type="file"] { width: 100%; margin-top: 0.5rem; padding: 0.5rem; }
+    button { margin-right: 1rem; margin-top: 1rem; padding: 0.5rem 1rem; }
+    pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Generate Ubuntu Install Script</h1>
+
+  <label>
+    List of apt packages & Docker images (comma-separated):
+    <textarea id="items" rows="3" placeholder="e.g. git, curl, nginx, redis:latest, myrepo/app:1.2"></textarea>
+  </label>
+
+  <label>
+    Upload extra packages list (one per line, optional):
+    <input type="file" id="requirements" accept=".txt">
+  </label>
+
+  <button id="generate">Generate Script</button>
+  <button id="download" style="display: none;">Download Script</button>
+
+  <h2>Generated Script</h2>
+  <pre id="output">Your script will appear here…</pre>
+
+  <script>
+    let latestScript = "";
+
+    document.getElementById("generate").addEventListener("click", () => {
+      const raw = document.getElementById("items").value;
+      // split by comma or newline
+      const items = raw
+        .split(/[\n,]+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const fileInput = document.getElementById("requirements");
+      if (!fileInput.files.length) {
+        callGenerateAPI(items, []);
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const lines = reader.result
+            .split(/\r?\n/)
+            .map(l => l.trim())
+            .filter(l => l && !l.startsWith("#"));
+          callGenerateAPI(items, lines);
+        };
+        reader.readAsText(fileInput.files[0]);
+      }
+    });
+
+    function callGenerateAPI(items, requirements) {
+      const outputEl = document.getElementById("output");
+      outputEl.textContent = "Generating…";
+
+      fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items, requirements })
+      })
+        .then(res => res.ok ? res.json() : Promise.reject(res.statusText))
+        .then(data => {
+          latestScript = data.script;
+          outputEl.textContent = latestScript;
+          showDownload();
+        })
+        .catch(err => {
+          outputEl.textContent = `Error: ${err}`;
+        });
+    }
+
+    function showDownload() {
+      const dl = document.getElementById("download");
+      dl.style.display = "inline-block";
+      dl.onclick = () => {
+        const blob = new Blob([latestScript], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "install.sh";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+    }
+  </script>
+</body>
+</html>
