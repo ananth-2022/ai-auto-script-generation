@@ -29,7 +29,7 @@ def generate_script():
 Generate an idempotent Bash script for Ubuntu server that does the following:
 
 1. Updates apt (only if not up to date) and installs missing apt packages.
-2. Pulls Docker images and installs any packages.
+2. Pulls requested Docker images and installs any requested packages.
 
 Requested items:
 {', '.join(combined)}
@@ -49,3 +49,4 @@ Each step must check for existing installation or running container before proce
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
