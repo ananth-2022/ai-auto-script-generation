@@ -32,6 +32,14 @@
 
   <script>
     let latestScript = "";
+    function removeFirstAndLastLine(str) {
+      // Split on either Unix (\n) or Windows (\r\n) line breaks
+      const lines = str.split(/\r?\n/);
+      // If there are two lines or fewer, nothing remains once you strip first & last
+      if (lines.length <= 2) return '';
+      // Take everything except the first and last lines, then rejoin
+      return lines.slice(1, -1).join('\n');
+    }
 
     document.getElementById("generate").addEventListener("click", () => {
       const raw = document.getElementById("items").value;
@@ -69,7 +77,7 @@
         .then(res => res.ok ? res.json() : Promise.reject(res.statusText))
         .then(data => {
           latestScript = data.script;
-          outputEl.textContent = latestScript;
+          outputEl.textContent = removeFirstAndLastLine(latestScript);
           showDownload();
         })
         .catch(err => {
@@ -81,7 +89,7 @@
       const dl = document.getElementById("download");
       dl.style.display = "inline-block";
       dl.onclick = () => {
-        const blob = new Blob([latestScript], { type: "text/plain" });
+        const blob = new Blob([removeFirstAndLastLine(latestScript)], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
