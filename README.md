@@ -1,6 +1,6 @@
 # AI powered server setup script generator
 
-A Flask-based web application that generates a Bash script to install user-specified packages on Ubuntu server by prompting an LLM.
+A Flask-based web application that generates a Bash script to carry out user-specified tasks on Ubuntu server by prompting an LLM.
 
 ---
 
@@ -62,7 +62,7 @@ A Flask-based web application that generates a Bash script to install user-speci
    ```
    http://127.0.0:5000
    ```
-3. Type the packages you want installed into the textarea or upload a text file. (You can describe any additional instructions in plain english)
+3. Type required tasks into the textarea or upload a text file. (You can describe any additional instructions in plain english)
 4. Click Download to retrieve the generated Bash script.  
 5. Transfer `install.sh` to your Ubuntu server, make it executable, and run it:  
    ```bash
