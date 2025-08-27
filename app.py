@@ -26,15 +26,11 @@ def generate_script():
 
     # Build prompt
     prompt = f"""
-Generate an idempotent Bash script for Ubuntu server that does the following:
-
-1. Updates apt (only if not up to date) and installs missing apt packages.
-2. Pulls requested Docker images and installs any requested packages.
-
-Requested items:
+You are an expert at Ubuntu Server
+Generate a Bash script for Ubuntu server that does the following requested actions:
 {', '.join(combined)}
-
-Each step must check for existing installation or running container before proceeding. Please do not include any explanation at the bottom.
+The script will be run in a privilaged docker container and its output will be saved so make sure the output is formatted well.
+The script should be robust and self-contained. Do not include any explanatory text, markdown formatting, or anything other than the raw script code itself.
 """
 
     response = openai.ChatCompletion.create(
@@ -49,4 +45,3 @@ Each step must check for existing installation or running container before proce
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-
