@@ -29,7 +29,7 @@ def generate_script():
 You are an expert at Ubuntu Server
 Generate a Bash script for Ubuntu server that does the following requested actions:
 {', '.join(combined)}
-The script will be run in a privilaged docker container and its output will be saved so make sure the output is formatted well.
+The script will be run in a privilaged docker container (so do not use sudo) and its output will be saved so make sure the output is formatted well. Make sure that anything that must be tested or verified clearly indicates a pass or fail.
 The script should be robust and self-contained. Do not include any explanatory text, markdown formatting, or anything other than the raw script code itself.
 """
 
