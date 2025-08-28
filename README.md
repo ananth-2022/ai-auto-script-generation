@@ -64,11 +64,16 @@ A Flask-based web application that generates a Bash script to carry out user-spe
    ```
 3. Type required tasks into the textarea or upload a text file. (You can describe any additional instructions in plain english)
 4. Click Download to retrieve the generated Bash script.  
-5. Transfer `install.sh` to your Ubuntu server, make it executable, and run it:  
+5. Transfer `test_script.sh` to your Ubuntu server, make it executable, and run it:  
    ```bash
-   chmod +x install.sh
-   ./install.sh
+   chmod +x test_script.sh
+   ./test_script.sh
    ```
+   or if you have docker installed, you can test it with a local test container by running
+   ```bash
+   chmod +x test_script.sh
+   python tester.py
+   ```   
 
 ---
 
@@ -79,5 +84,8 @@ A Flask-based web application that generates a Bash script to carry out user-spe
 
 - **templates/index.html**  
   Frontend form for listing desired packages.
+
+- **tester.py**  
+  Testing with a local docker container.
 
 ---
