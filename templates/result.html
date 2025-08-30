@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Execution Results</title>
+  <style>
+    body {
+      font-family: monospace;
+      margin: 2em;
+      white-space: pre-wrap;
+    }
+    a {
+      display: inline-block;
+      margin-bottom: 1em;
+    }
+    button {
+      margin-left: 1em;
+      padding: 0.3em 0.6em;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <a href="{{ url_for('index') }}">&larr; Back</a>
+  <button id="downloadLog">💾 Download Log</button>
+
+  <h2>Run Log</h2>
+  <pre id="runLog">{{ log }}</pre>
+
+  <script>
+    document.getElementById('downloadLog').addEventListener('click', function() {
+      // grab the text from the <pre>
+      const text = document.getElementById('runLog').innerText;
+
+      // create a Blob, generate a URL, and trigger download
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+
+      a.href     = url;
+      a.download = 'last_run.log';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // cleanup
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

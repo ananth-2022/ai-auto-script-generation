@@ -2,18 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Ubuntu Installer Script Generator</title>
+  <title>Ubuntu Installer Script Generator & Tester</title>
   <style>
     body { font-family: sans-serif; margin: 2rem; }
     label { display: block; margin-bottom: 1rem; }
-    textarea, input[type="file"] { width: 100%; margin-top: 0.5rem; padding: 0.5rem; }
+    textarea, input[type="file"] {
+      width: 100%; margin-top: 0.5rem; padding: 0.5rem;
+    }
     button { margin-right: 1rem; margin-top: 1rem; padding: 0.5rem 1rem; }
-    pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; white-space: pre-wrap; }
+    pre {
+      background: #f4f4f4; padding: 1rem;
+      overflow-x: auto; white-space: pre-wrap;
+      border: 1px solid #ddd;
+    }
+    form.section { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #ccc; }
   </style>
 </head>
 <body>
-  <h1>Generate Ubuntu Server Script</h1>
+  <h1>Ubuntu Server Script Generator & Tester</h1>
 
+  <!-- Generation Inputs -->
   <label>
     List of requirements (comma-separated):
     <textarea id="items" rows="3"></textarea>
@@ -25,25 +33,40 @@
   </label>
 
   <button id="generate">Generate Script</button>
-  <button id="download" style="display: none;">Download Script</button>
 
   <h2>Generated Script</h2>
   <pre id="output">Your script will appear here…</pre>
 
+  <!-- Action Buttons -->
+  <button id="download" style="display:none;">Download Script</button>
+  <button id="runGenerated" style="display:none;">Run in Docker</button>
+
+  <!-- Hidden form to POST generated script to /run -->
+  <form id="runForm" action="/run" method="post" style="display:none;">
+    <input type="hidden" name="script" id="scriptInput">
+  </form>
+
+  <!-- Direct Upload & Run Section -->
+  <form class="section" action="/run" method="post" enctype="multipart/form-data">
+    <h2>Or Upload Your Own .sh File</h2>
+    <label>
+      Select a Bash script:
+      <input type="file" name="script_file" accept=".sh">
+    </label>
+    <button type="submit">Upload & Run</button>
+  </form>
+
   <script>
     let latestScript = "";
+
     function removeFirstAndLastLine(str) {
-      // Split on either Unix (\n) or Windows (\r\n) line breaks
       const lines = str.split(/\r?\n/);
-      // If there are two lines or fewer, nothing remains once you strip first & last
       if (lines.length <= 2) return '';
-      // Take everything except the first and last lines, then rejoin
       return lines.slice(1, -1).join('\n');
     }
 
     document.getElementById("generate").addEventListener("click", () => {
       const raw = document.getElementById("items").value;
-      // split by comma or newline
       const items = raw
         .split(/[\n,]+/)
         .map(s => s.trim())
@@ -77,27 +100,37 @@
         .then(res => res.ok ? res.json() : Promise.reject(res.statusText))
         .then(data => {
           latestScript = data.script;
-          outputEl.textContent = removeFirstAndLastLine(latestScript);
-          showDownload();
+          const bodyOnly = removeFirstAndLastLine(latestScript);
+          outputEl.textContent = bodyOnly;
+          showActions(bodyOnly);
         })
         .catch(err => {
           outputEl.textContent = `Error: ${err}`;
         });
     }
 
-    function showDownload() {
+    function showActions(scriptText) {
+      // Download button
       const dl = document.getElementById("download");
       dl.style.display = "inline-block";
       dl.onclick = () => {
-        const blob = new Blob([removeFirstAndLastLine(latestScript)], { type: "text/plain" });
+        const blob = new Blob([scriptText], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "install.sh";
+        a.download = "test_script.sh";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+      };
+
+      // Run button
+      const runBtn = document.getElementById("runGenerated");
+      runBtn.style.display = "inline-block";
+      runBtn.onclick = () => {
+        document.getElementById("scriptInput").value = scriptText;
+        document.getElementById("runForm").submit();
       };
     }
   </script>
