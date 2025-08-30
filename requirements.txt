@@ -1,0 +1,3 @@
+install (indepotently) python, git, nodejs
+only after installing all, verify all installations
+display date and time the script was run and print system information
