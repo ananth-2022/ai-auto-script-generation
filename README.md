@@ -1,6 +1,6 @@
 # AI powered server setup script generator
 
-A Flask-based web application that generates a Bash script to carry out user-specified tasks on Ubuntu server by prompting an LLM.
+A Flask-based web application that generates a Bash script to carry out user-specified tasks on Ubuntu server by prompting an LLM. Also provides utilities for testing the scripts.
 
 ---
 
@@ -73,7 +73,9 @@ A Flask-based web application that generates a Bash script to carry out user-spe
    ```bash
    chmod +x test_script.sh
    python tester.py
-   ```   
+   ```
+   or
+   Press run in docker to test it in a container (or upload your own script to run)   
 
 ---
 
@@ -84,6 +86,9 @@ A Flask-based web application that generates a Bash script to carry out user-spe
 
 - **templates/index.html**  
   Frontend form for listing desired packages.
+
+- **templates/result.html**
+  Shows the result of the script being tested in a docker container
 
 - **tester.py**  
   Testing with a local docker container.
